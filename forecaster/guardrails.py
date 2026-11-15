@@ -86,11 +86,15 @@ def check_price_sanity(prev_close: float, close: float, had_news: bool) -> Guard
 
 
 _NUM_RE = re.compile(r"(?<![\w.])\$?(\d+(?:,\d{3})*(?:\.\d+)?)\s*(%|percent)?")
+# Dates, years, form names and index names are not claims about the company's figures.
+_NOT_FIGURES = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b(19|20)\d{2}\b(?![.,]\d)|\b(10-K|10-Q|8-K)\b|S&P\s*500",
+                          re.IGNORECASE)
 
 
 def _numbers(text: str) -> List[tuple]:
     out = []
-    for m in _NUM_RE.finditer(text or ""):
+    text = _NOT_FIGURES.sub(" ", text or "")
+    for m in _NUM_RE.finditer(text):
         raw = float(m.group(1).replace(",", ""))
         out.append((raw, bool(m.group(2))))
     return out

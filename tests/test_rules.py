@@ -96,6 +96,9 @@ def test_source_verification_blocks_unsourced_numbers_and_fake_citations():
     good = Recommendation("X", "trim", -2, 45, "high", "low", "Revenue grew 14% and margin fell to 27.5%.",
                           ["E1"], "margin recovers")
     assert verify_recommendation(good, facts, ev).ok
+    dated = Recommendation("X", "hold", 0, 45, "high", "high", "Re-review on 2026-12-15, after the Q2 2027 "
+                           "10-Q, versus the S&P 500.", ["E1"], "x")
+    assert verify_recommendation(dated, facts, ev).ok  # dates, years and form names are not figures
     bad = Recommendation("X", "trim", -2, 45, "high", "low", "Revenue grew 35%.", ["E1", "E9"], "x")
     report = verify_recommendation(bad, facts, ev)
     assert any("35" in v for v in report.violations)
