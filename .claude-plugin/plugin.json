@@ -1,0 +1,15 @@
+{
+  "name": "stock-forecaster",
+  "description": "Multi-agent thesis reviewer with guardrails: reviews stock theses against SEC filings, prices and policy documents. Read-only; paper trading only.",
+  "version": "1.0.0",
+  "author": { "name": "Koti" },
+  "license": "MIT",
+  "keywords": ["agents", "tree-of-thoughts", "rag", "guardrails", "mcp"],
+  "mcpServers": {
+    "stock-forecaster": {
+      "command": "uv",
+      "args": ["--directory", "${CLAUDE_PLUGIN_ROOT}", "run", "--extra", "mcp", "python", "-m", "forecaster.mcp_server"],
+      "env": { "PYTHONPATH": "${CLAUDE_PLUGIN_ROOT}" }
+    }
+  }
+}

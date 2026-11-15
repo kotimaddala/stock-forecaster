@@ -1,0 +1,173 @@
+{
+  "id": "S08",
+  "title": "Stale price data",
+  "category": "fallback",
+  "note": "",
+  "today": "2026-11-12",
+  "trigger": "Third-quarter 10-Q filed: revenue growth missed the 20% checkpoint.",
+  "last_review": "2026-08-15",
+  "market_shock": false,
+  "thesis": {
+    "ticker": "SYN-GRID",
+    "company": "Gridworks (synthetic)",
+    "sector": "Industrials",
+    "horizon_months": 12,
+    "summary": "Transformer maker benefiting from federal grid spending; revenue growth above 20% with stable margins.",
+    "checkpoints": {
+      "revenue_growth_min": 0.2
+    },
+    "position_pct": 6.0,
+    "stop_price": 41.0,
+    "conviction": "high",
+    "policy_topic": "Grid Resilience Program"
+  },
+  "facts": {
+    "revenue_growth_yoy": [
+      0.14,
+      "SEC XBRL (synthetic)",
+      1,
+      "2026-10-30"
+    ],
+    "gross_margin": [
+      0.275,
+      "SEC XBRL (synthetic)",
+      1,
+      "2026-10-30"
+    ],
+    "gross_margin_change": [
+      -0.035,
+      "SEC XBRL (synthetic)",
+      1,
+      "2026-10-30"
+    ],
+    "backlog_growth": [
+      0.09,
+      "10-Q (synthetic)",
+      1,
+      "2026-10-30"
+    ],
+    "px_close": [
+      48.2,
+      "daily prices (synthetic)",
+      1,
+      "2026-11-11"
+    ],
+    "px_atr14": [
+      1.3,
+      "daily prices (synthetic)",
+      1,
+      "2026-11-11"
+    ],
+    "px_technical": [
+      "supportive",
+      "daily prices (synthetic)",
+      1,
+      "2026-10-10"
+    ],
+    "policy_status": [
+      "proposed",
+      "Federal Register (synthetic)",
+      1,
+      "2026-11-03"
+    ],
+    "policy_direction": [
+      "unfavorable",
+      "thesis owner",
+      2,
+      "2026-11-03"
+    ]
+  },
+  "chunks": [
+    {
+      "chunk_id": "G-MDA-1",
+      "ticker": "SYN-GRID",
+      "form": "10-Q",
+      "section": "Management's Discussion and Analysis",
+      "filed": "2026-10-30",
+      "tier": 1,
+      "source_url": "https://example.org/synthetic/G-MDA-1",
+      "text": "Revenue for the third quarter increased 14% compared with the prior-year quarter. Growth was reduced by a shortage of grain-oriented electrical steel used in our transformer cores, which delayed shipments. Management expects the component shortage to continue for the next two quarters."
+    },
+    {
+      "chunk_id": "G-MDA-2",
+      "ticker": "SYN-GRID",
+      "form": "10-Q",
+      "section": "Management's Discussion and Analysis",
+      "filed": "2026-10-30",
+      "tier": 1,
+      "source_url": "https://example.org/synthetic/G-MDA-2",
+      "text": "Backlog increased 9% to a record level. Approximately 40% of backlog depends on utility projects funded under the federal Grid Resilience Program, so the timing of federal disbursements directly affects when revenue is recognized."
+    },
+    {
+      "chunk_id": "G-MDA-3",
+      "ticker": "SYN-GRID",
+      "form": "10-Q",
+      "section": "Management's Discussion and Analysis",
+      "filed": "2026-10-30",
+      "tier": 1,
+      "source_url": "https://example.org/synthetic/G-MDA-3",
+      "text": "Gross margin declined to 27.5% from 31.0% in the prior quarter, primarily due to expedited freight and spot purchases of electrical steel made to mitigate the shortage."
+    },
+    {
+      "chunk_id": "G-RF-1",
+      "ticker": "SYN-GRID",
+      "form": "10-Q",
+      "section": "Risk Factors",
+      "filed": "2026-10-30",
+      "tier": 1,
+      "source_url": "https://example.org/synthetic/G-RF-1",
+      "text": "We depend on a limited number of suppliers for electrical steel. A prolonged shortage of electrical steel could reduce our margins and delay deliveries to utility customers."
+    },
+    {
+      "chunk_id": "G-PR-1",
+      "ticker": "SYN-GRID",
+      "form": "PR",
+      "section": "Press release",
+      "filed": "2026-10-30",
+      "tier": 2,
+      "source_url": "https://example.org/synthetic/G-PR-1",
+      "text": "Gridworks reports third quarter results. Chief executive: our quarter was affected by temporary delays in federal grid funding. Demand remains strong and we expect growth to return once funding resumes."
+    },
+    {
+      "chunk_id": "FR-1",
+      "ticker": "SYN-GRID",
+      "form": "FedReg",
+      "section": "proposed",
+      "filed": "2026-11-03",
+      "tier": 1,
+      "source_url": "https://example.org/synthetic/FR-1",
+      "text": "Proposed rule: the Department of Energy proposes a revised disbursement schedule for the Grid Resilience Program, deferring a portion of fiscal year 2027 funding to fiscal year 2028. Comments are due December 15, 2026."
+    },
+    {
+      "chunk_id": "G-MDA-OLD",
+      "ticker": "SYN-GRID",
+      "form": "10-Q",
+      "section": "Management's Discussion and Analysis",
+      "filed": "2026-07-30",
+      "tier": 1,
+      "source_url": "https://example.org/synthetic/G-MDA-OLD",
+      "text": "Revenue increased 24% compared with the prior-year quarter. We have adequate supply of electrical steel and no supply constraints on transformer production."
+    },
+    {
+      "chunk_id": "V-MDA-1",
+      "ticker": "SYN-VOLT",
+      "form": "10-Q",
+      "section": "Management's Discussion and Analysis",
+      "filed": "2026-10-29",
+      "tier": 1,
+      "source_url": "https://example.org/synthetic/V-MDA-1",
+      "text": "Revenue for the third quarter decreased 6%. Demand from utility customers weakened and a shortage of electrical steel delayed transformer shipments for the next two quarters."
+    }
+  ],
+  "search": {},
+  "script": {},
+  "expected": {
+    "action": "hold",
+    "fallback": true,
+    "llm_calls": 0
+  },
+  "live_eligible": false,
+  "acceptable_actions": [
+    "hold"
+  ]
+}

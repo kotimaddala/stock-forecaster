@@ -1,0 +1,15 @@
+{
+  "ticker": "ETN",
+  "company": "Eaton Corporation",
+  "sector": "Industrials",
+  "horizon_months": 12,
+  "summary": "Electrical equipment supplier benefiting from data-center and grid investment; revenue growth above 8% with stable gross margins.",
+  "checkpoints": {"revenue_growth_min": 0.08},
+  "position_pct": 5.0,
+  "stop_price": 250.0,
+  "conviction": "high",
+  "policy_topic": "electric grid transmission",
+  "policy_direction": "favorable",
+  "last_review": "2026-08-01",
+  "prior_misses": 0
+}

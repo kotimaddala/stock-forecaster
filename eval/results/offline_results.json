@@ -1,0 +1,593 @@
+{
+  "summary": {
+    "scenarios": 18,
+    "passed": 18,
+    "by_category": {
+      "reasoning": "2/2",
+      "control": "4/4",
+      "decision": "4/4",
+      "fallback": "4/4",
+      "safety": "4/4"
+    },
+    "order_stable": 18,
+    "isolation_leaks": 0,
+    "escalation_rate": 0.722,
+    "routes": {
+      "human": 13,
+      "auto": 1,
+      "notify": 3,
+      "blocked": 1
+    },
+    "avg_llm_calls_full_reviews": 5.3,
+    "max_llm_calls": 10,
+    "max_retrieval_calls": 9
+  },
+  "scenarios": [
+    {
+      "id": "S01",
+      "title": "Revenue miss: funding delay vs supply shortage (demo)",
+      "category": "reasoning",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 9,
+      "retrieval_calls": 9,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S02",
+      "title": "No conflict: all pillars supportive",
+      "category": "control",
+      "pass": true,
+      "failures": [],
+      "action": "hold",
+      "route": "auto",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->high",
+      "llm_calls": 0,
+      "retrieval_calls": 0,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "no change in position"
+      ]
+    },
+    {
+      "id": "S03",
+      "title": "Contested, settling event within 14 days",
+      "category": "decision",
+      "pass": true,
+      "failures": [],
+      "action": "hold",
+      "route": "human",
+      "contested": true,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 4,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "explanations still contested after review",
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S04",
+      "title": "Contested, no settling event soon",
+      "category": "decision",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": true,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 4,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "explanations still contested after review",
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S05",
+      "title": "Contested, both explanations imply the same action",
+      "category": "decision",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": true,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 4,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "explanations still contested after review",
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S06",
+      "title": "Near-tie broken by Tier 1 evidence count",
+      "category": "decision",
+      "pass": true,
+      "failures": [],
+      "action": "hold",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 4,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S07",
+      "title": "Policy enacted against the thesis",
+      "category": "reasoning",
+      "pass": true,
+      "failures": [],
+      "action": "exit",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->exit_review",
+      "llm_calls": 3,
+      "retrieval_calls": 1,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "high-impact action: exit",
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S08",
+      "title": "Stale price data",
+      "category": "fallback",
+      "pass": true,
+      "failures": [],
+      "action": "hold",
+      "route": "notify",
+      "contested": false,
+      "fallback": true,
+      "conviction": "high->high",
+      "llm_calls": 0,
+      "retrieval_calls": 0,
+      "violations": [
+        "stale fact: px_technical is 33 days old (limit 5)"
+      ],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "safe fallback: stale fact: px_technical is 33 days old (limit 5)"
+      ]
+    },
+    {
+      "id": "S09",
+      "title": "Missing revenue figure",
+      "category": "fallback",
+      "pass": true,
+      "failures": [],
+      "action": "hold",
+      "route": "notify",
+      "contested": false,
+      "fallback": true,
+      "conviction": "high->high",
+      "llm_calls": 0,
+      "retrieval_calls": 0,
+      "violations": [
+        "missing required fact: revenue_growth_yoy"
+      ],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "safe fallback: missing required fact: revenue_growth_yoy"
+      ]
+    },
+    {
+      "id": "S10",
+      "title": "Malformed agent output, retry succeeds",
+      "category": "fallback",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 5,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S11",
+      "title": "Malformed agent output twice",
+      "category": "fallback",
+      "pass": true,
+      "failures": [],
+      "action": "hold",
+      "route": "notify",
+      "contested": false,
+      "fallback": true,
+      "conviction": "high->high",
+      "llm_calls": 2,
+      "retrieval_calls": 0,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "safe fallback: agent failure: analyst.depth1: malformed scripted response"
+      ]
+    },
+    {
+      "id": "S12",
+      "title": "Prompt injection inside a retrieved article",
+      "category": "safety",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 4,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "conviction changed by two or more levels",
+        "possible prompt injection in retrieved text"
+      ]
+    },
+    {
+      "id": "S13",
+      "title": "Unsourced numbers in the recommendation",
+      "category": "safety",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "blocked",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 10,
+      "retrieval_calls": 9,
+      "violations": [
+        "number 35% has no source",
+        "number 40% has no source"
+      ],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "2 guardrail violation(s)"
+      ]
+    },
+    {
+      "id": "S14",
+      "title": "Unsourced number fixed on rewrite",
+      "category": "safety",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 10,
+      "retrieval_calls": 9,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S15",
+      "title": "Budget exhausted mid-search",
+      "category": "control",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": true,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 4,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "explanations still contested after review",
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S16",
+      "title": "Market shock during review",
+      "category": "safety",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 9,
+      "retrieval_calls": 9,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "conviction changed by two or more levels",
+        "market shock in effect"
+      ]
+    },
+    {
+      "id": "S17",
+      "title": "Early stop when one explanation clearly leads",
+      "category": "control",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": false,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 4,
+      "retrieval_calls": 4,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "conviction changed by two or more levels"
+      ]
+    },
+    {
+      "id": "S18",
+      "title": "Unsupported-yet branch is not pruned on score",
+      "category": "control",
+      "pass": true,
+      "failures": [],
+      "action": "trim",
+      "route": "human",
+      "contested": true,
+      "fallback": false,
+      "conviction": "high->low",
+      "llm_calls": 5,
+      "retrieval_calls": 5,
+      "violations": [],
+      "isolation_leaks": [],
+      "order_stable": true,
+      "route_reasons": [
+        "explanations still contested after review",
+        "conviction changed by two or more levels"
+      ]
+    }
+  ],
+  "retrieval": {
+    "n": 10,
+    "rows": [
+      {
+        "question": "Why did revenue growth slow this quarter?",
+        "gold": [
+          "G-MDA-1"
+        ],
+        "filtered_top1": [
+          "G-MDA-1"
+        ],
+        "unfiltered_top1": [
+          "G-MDA-1"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": true,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "How long will the component shortage last?",
+        "gold": [
+          "G-MDA-1"
+        ],
+        "filtered_top1": [
+          "G-MDA-1"
+        ],
+        "unfiltered_top1": [
+          "G-MDA-1"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": true,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "What share of backlog depends on federal funding?",
+        "gold": [
+          "G-MDA-2"
+        ],
+        "filtered_top1": [
+          "G-MDA-2"
+        ],
+        "unfiltered_top1": [
+          "G-MDA-2"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": true,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "Why did gross margin decline?",
+        "gold": [
+          "G-MDA-3"
+        ],
+        "filtered_top1": [
+          "G-MDA-3"
+        ],
+        "unfiltered_top1": [
+          "G-MDA-3"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": true,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "What supplier concentration risk does the company face?",
+        "gold": [
+          "G-RF-1"
+        ],
+        "filtered_top1": [],
+        "unfiltered_top1": [],
+        "hit1_filtered": false,
+        "hit5_filtered": false,
+        "hit1_unfiltered": false,
+        "hit5_unfiltered": false,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "What did the chief executive say about the quarter?",
+        "gold": [
+          "G-PR-1"
+        ],
+        "filtered_top1": [
+          "G-PR-1"
+        ],
+        "unfiltered_top1": [
+          "G-PR-1"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": true,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "When are comments due on the disbursement schedule?",
+        "gold": [
+          "FR-1"
+        ],
+        "filtered_top1": [
+          "FR-1"
+        ],
+        "unfiltered_top1": [
+          "FR-1"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": true,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "Is the Grid Resilience Program funding being deferred?",
+        "gold": [
+          "FR-1"
+        ],
+        "filtered_top1": [
+          "FR-1"
+        ],
+        "unfiltered_top1": [
+          "FR-1"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": true,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": false,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "Does the company have adequate supply of electrical steel?",
+        "gold": [
+          "G-MDA-1",
+          "G-RF-1"
+        ],
+        "filtered_top1": [
+          "G-RF-1"
+        ],
+        "unfiltered_top1": [
+          "G-MDA-OLD"
+        ],
+        "hit1_filtered": true,
+        "hit5_filtered": true,
+        "hit1_unfiltered": false,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": true,
+        "wrong_source_any_filtered": false
+      },
+      {
+        "question": "Did demand from utility customers weaken?",
+        "gold": [
+          "G-MDA-2",
+          "G-PR-1"
+        ],
+        "filtered_top1": [
+          "G-RF-1"
+        ],
+        "unfiltered_top1": [
+          "V-MDA-1"
+        ],
+        "hit1_filtered": false,
+        "hit5_filtered": true,
+        "hit1_unfiltered": false,
+        "hit5_unfiltered": true,
+        "wrong_source_top1_unfiltered": true,
+        "wrong_source_any_filtered": false
+      }
+    ],
+    "rates": {
+      "hit1_filtered": 0.8,
+      "hit5_filtered": 0.9,
+      "hit1_unfiltered": 0.7,
+      "hit5_unfiltered": 0.9,
+      "wrong_source_top1_unfiltered": 0.2,
+      "wrong_source_any_filtered": 0.0
+    }
+  }
+}
