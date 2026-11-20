@@ -73,7 +73,7 @@ def report(trades: pd.DataFrame, account: float = 100_000) -> str:
     equity = pd.concat([pd.Series([0.0]), pnl], ignore_index=True) + account
     drawdown = ((equity / equity.cummax()) - 1).min() * 100
     lines = ["# Scanner backtest (point-in-time)", "",
-             f"Signals from {trades['entry_day'].min()} to {trades['exit_day'].max()}. "
+             f"Signals from {str(trades['signal_day'].min())[:10]} to {str(trades['exit_day'].max())[:10]}. "
              "Dollar amounts are written as USD so Markdown viewers do not read $ as math.", "",
              "| Measure | Result |", "| --- | --- |",
              f"| Trades | {len(trades)} |",
