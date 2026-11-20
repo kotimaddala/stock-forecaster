@@ -98,7 +98,7 @@ git clone https://github.com/kotimaddala/stock-forecaster.git
 cd stock-forecaster
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python -m pytest -q                                     # 57 tests, no network needed
+python -m pytest -q                                     # 58 tests, no network needed
 ```
 
 For live mode, copy `.env.example` to `.env` and set:
@@ -159,7 +159,7 @@ eval/
   backtest_scanner.py  Point-in-time backtest vs SPY
   results/           Generated results and the worked demo
   scenarios/         Each scenario as JSON (inputs, expected outcome)
-tests/               57 tests: rules, guardrails, retrieval, parsing, pipeline, scenarios
+tests/               58 tests: rules, guardrails, retrieval, parsing, pipeline, scenarios
 notebooks/           Colab quickstart
 ```
 

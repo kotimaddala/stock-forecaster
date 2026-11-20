@@ -114,12 +114,14 @@ class ThesisReviewer:
             return self._finish(rec, [], pillars, GuardrailReport(), mode, started, trace)
 
         if not frontier:
-            rec = self._fallback(thesis, ["every explanation was contradicted or scored below the threshold"])
+            rec = self._unexplained(thesis, pillars, market_shock, confirming_reviews,
+                                    ["every explanation was contradicted or scored below the threshold"])
             return self._finish(rec, tree, pillars, GuardrailReport(), mode, started, trace)
 
         best, runner, contested = self._decide(frontier, context, last_review, trace)
         if best.score < self.s.search.prune_below:
-            rec = self._fallback(thesis, [f"best explanation scored {best.score} (< {self.s.search.prune_below})"])
+            rec = self._unexplained(thesis, pillars, market_shock, confirming_reviews,
+                                    [f"best explanation scored {best.score} (< {self.s.search.prune_below})"])
             return self._finish(rec, tree, pillars, GuardrailReport(), mode, started, trace)
 
         best.status = "selected"
@@ -155,7 +157,12 @@ class ThesisReviewer:
 
     def _search(self, thesis, facts, context, last_review, trace) -> Tuple[List[Branch], List[Branch]]:
         S = self.s.search
-        depth1 = self.analyst.propose(context, S.depth1_branches)
+        # Ground the brainstorm in the latest filing text (one retrieval call), so explanations
+        # start from specific events rather than generic market stories.
+        overview = self.index.search("results of operations, segment changes, acquisitions, divestitures, "
+                                     "margins, outlook and risks", ticker=thesis.ticker)[:5]
+        self.researcher.calls += 1
+        depth1 = self.analyst.propose(context, S.depth1_branches, overview)
         trace.append(f"depth 1: {len(depth1)} explanations proposed")
         self._evaluate(depth1, thesis, facts, context, last_review, trace)
         beam = self._prune_and_beam(depth1, trace, keep_min=2)
@@ -351,6 +358,28 @@ class ThesisReviewer:
             notes=reasons, fallback=True, route="notify", route_reasons=["safe fallback: " + "; ".join(reasons)],
         )
         return rec.validate()
+
+    def _unexplained(self, thesis: Thesis, pillars, shock: bool, confirming_reviews: int,
+                     reasons: List[str]) -> Recommendation:
+        """No explanation of the conflict was well supported. The models' story is missing, but the
+        code's pillar ratings are still facts: apply their conviction, take no position change,
+        and let routing send any material change to a human."""
+        after = apply_upgrade_rule(thesis.conviction, conviction_from_pillars(pillars, shock), confirming_reviews)
+        rec = Recommendation(
+            ticker=thesis.ticker, action="hold", size_change_pct=0.0, stop_price=thesis.stop_price,
+            conviction_before=thesis.conviction, conviction_after=after,
+            explanation=("No explanation of the signal conflict was well supported by the evidence. "
+                         f"Pillar ratings from code still apply: {', '.join(f'{k} {v}' for k, v in pillars.items())}."),
+            evidence_ids=["fact:px_technical", "fact:revenue_growth_yoy"], falsifier="",
+            notes=reasons + (["a pillar is broken: exit review needed by a human"] if after == "exit_review" else []),
+            fallback=True,
+        )
+        rec.validate()
+        self._route(rec, thesis, GuardrailReport(), contested=False, confidence=1.0, shock=shock, integrity=0)
+        if rec.route == "auto":
+            rec.route = "notify"
+        rec.route_reasons = ["unexplained conflict: " + "; ".join(reasons)] + rec.route_reasons
+        return rec
 
     def _no_conflict(self, thesis: Thesis, pillars, confirming_reviews: int) -> Recommendation:
         after = apply_upgrade_rule(thesis.conviction, conviction_from_pillars(pillars), confirming_reviews)

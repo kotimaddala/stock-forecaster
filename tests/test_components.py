@@ -129,3 +129,21 @@ def test_scripted_llm_malformed_then_valid():
     with pytest.raises(LLMError):
         llm.complete_json("t", "m", "s", "u")
     assert llm.complete_json("t", "m", "s", "u") == {"ok": True}
+
+
+def test_unexplained_conflict_still_applies_code_pillars():
+    """If no explanation is supported, code ratings still set conviction and a human sees it."""
+    from forecaster.config import load_settings
+    from forecaster.controller import ThesisReviewer
+    from forecaster.llm import ScriptedLLM
+    from forecaster.models import Thesis
+    from forecaster.retrieval import VectorIndex
+    thesis = Thesis("SYN-X", "X", "Industrials", 12, "s", {"revenue_growth_min": 0.08}, 6.0, 40.0, "high")
+    ctl = ThesisReviewer(VectorIndex(), ScriptedLLM({}), load_settings())
+    rec = ctl._unexplained(thesis, {"technical": "broken", "fundamental": "supportive", "policy": "supportive"},
+                           False, 0, ["best explanation scored 0.0 (< 4.0)"])
+    assert rec.action == "hold" and rec.conviction_after == "exit_review"
+    assert rec.route == "human"
+    rec2 = ctl._unexplained(thesis, {"technical": "weakening", "fundamental": "supportive",
+                                     "policy": "supportive"}, False, 0, ["x"])
+    assert rec2.conviction_after == "medium" and rec2.route in ("notify", "human")

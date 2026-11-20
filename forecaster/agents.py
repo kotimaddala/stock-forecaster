@@ -53,6 +53,14 @@ BRANCH_SCHEMA = (
 )
 
 
+CONDITION_RULE = (
+    "Conditions are facts that must be TRUE right now for the explanation to hold; if one is false the "
+    "explanation is ruled out. Use only fact keys from the known facts, and check each condition against "
+    "the known values before returning it: never include a condition that is already false. "
+    "Leave conditions empty rather than guess."
+)
+
+
 def parse_branch(raw: dict, depth: int, parent_id: str = "") -> Branch:
     try:
         conditions = [Condition(c["fact"], c["op"], c["value"]) for c in raw.get("conditions", [])]
@@ -79,12 +87,15 @@ class Analyst:
         except LLMError:
             return self.llm.complete_json(tag, self.model, system, user)  # one retry, then raise
 
-    def propose(self, context: str, n: int) -> List[Branch]:
+    def propose(self, context: str, n: int, evidence: Optional[List[Evidence]] = None) -> List[Branch]:
         system = ("You are an equity analyst. Propose competing explanations for a conflict between "
                   "price, fundamental and policy signals. Do not judge which is right. " + SAFETY_PREAMBLE)
-        user = (f"{context}\n\nPropose {n} distinct explanations. Each must list conditions it depends on, "
-                f"using only fact keys from the known facts or new keys you expect evidence for, and up to two "
-                f"search questions for the filings. Return {{\"branches\": [{BRANCH_SCHEMA}, ...]}}")
+        excerpts = (f"\n\nExcerpts from the latest filings (read them; specific events here, such as "
+                    f"mergers, divestitures, margin changes or guidance, often explain the conflict):\n"
+                    f"{quote_as_data(evidence, max_chars=900)}") if evidence else ""
+        user = (f"{context}{excerpts}\n\nPropose {n} distinct, specific explanations grounded in the facts "
+                f"and excerpts. {CONDITION_RULE} Also give up to two search questions for the filings. "
+                f"Return {{\"branches\": [{BRANCH_SCHEMA}, ...]}}")
         data = self._call("analyst.depth1", system, user)
         return [parse_branch(b, depth=1) for b in data.get("branches", [])[:n]]
 
@@ -93,7 +104,7 @@ class Analyst:
                   "using the evidence found. " + SAFETY_PREAMBLE)
         user = (f"{context}\n\nExplanation {parent.branch_id}: {parent.explanation}\n"
                 f"Evidence:\n{quote_as_data(parent.evidence)}\n\n"
-                f"Return {{\"refinements\": [{BRANCH_SCHEMA}, ...]}} with up to {n} items. "
+                f"{CONDITION_RULE} Return {{\"refinements\": [{BRANCH_SCHEMA}, ...]}} with up to {n} items. "
                 f"Use ids '{parent.branch_id}1', '{parent.branch_id}2'.")
         data = self._call(f"analyst.refine.{parent.branch_id}", system, user)
         return [parse_branch(b, depth=parent.depth + 1, parent_id=parent.branch_id)
