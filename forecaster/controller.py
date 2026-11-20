@@ -132,8 +132,7 @@ class ThesisReviewer:
             action, size_change = "exit", -thesis.position_pct
 
         retrieved = {e.chunk_id: e for b in tree for e in b.evidence}
-        known_numbers = [stop, abs(size_change), thesis.position_pct, thesis.stop_price] + \
-            [v for v in thesis.checkpoints.values()] + [v * 100 for v in thesis.checkpoints.values()]
+        known_numbers = _thesis_numbers(thesis, stop, size_change)
         rec = self._write_recommendation(thesis, facts, context, best, runner, action, size_change, stop,
                                          conviction_after, contested, notes, retrieved)
         report = verify_recommendation(rec, facts, retrieved, extra_numbers=known_numbers)
@@ -387,7 +386,8 @@ class ThesisReviewer:
                              conviction_after=after, explanation=branch.explanation, evidence_ids=ids or
                              [e.chunk_id for e in evidence[:1]], falsifier=str(data.get("falsifier") or "not stated"))
         retrieved = {e.chunk_id: e for e in evidence}
-        report = verify_recommendation(rec, facts, retrieved, extra_numbers=[abs(size)])
+        report = verify_recommendation(rec, facts, retrieved,
+                                       extra_numbers=_thesis_numbers(thesis, thesis.stop_price, size))
         self._route(rec, thesis, report, False, 1.0, shock, sum(e.flagged_injection for e in evidence))
         return self._finish(rec, [branch], pillars_after, report, "single", started, trace)
 
@@ -401,3 +401,9 @@ class ThesisReviewer:
         if self.journal is not None:
             self.journal.save_review(result)
         return result
+
+
+def _thesis_numbers(thesis: Thesis, stop: float, size_change: float) -> List[float]:
+    """Numbers the owner's thesis and the plan itself supply; both modes may quote them."""
+    cps = [float(v) for v in thesis.checkpoints.values() if isinstance(v, (int, float))]
+    return [stop, abs(size_change), thesis.position_pct, thesis.stop_price] + cps + [v * 100 for v in cps]
