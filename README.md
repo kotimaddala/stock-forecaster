@@ -86,8 +86,19 @@ control layer and retrieval, not model judgment). Full table: [`eval/results/off
 | Retrieval: correct passage ranked first, with vs without filters | 80% vs 70% |
 | Retrieval: wrong-company or outdated passage ranked first, without filters | 20% (0% with filters) |
 
-Live results (real models, ToT vs single chain of thought) and the scanner backtest are produced by
-`eval/run_live_eval.py` and `eval/backtest_scanner.py`; see [`eval/results/`](eval/results/).
+Live evaluation (`python -m eval.run_live_eval --repeats 3`, real models: Analyst `openai/gpt-4o-mini`,
+Reviewer `anthropic/claude-sonnet-4.5`; 5 scenarios x 3 runs). Full table: [`eval/results/live_results.md`](eval/results/live_results.md).
+
+| Measure | Multi-agent (ToT) | Single chain of thought |
+| --- | --- | --- |
+| Acceptable action and not blocked | 14/15 | 11/15 |
+| Policy enacted against the thesis: exit found | 3/3 | 0/3 (trim every time) |
+| Same action in all three runs | 1/5 scenarios | 5/5 scenarios |
+| Median model calls and seconds per review | 5 calls, 35 s | 1 call, 3 s |
+
+Scanner backtest from 2024 (`python -m eval.backtest_scanner`): 135 trades, +0.11 R per trade, maximum
+drawdown 8.8%, but an average trade return of 0.45% against 0.46% for SPY over the same days: no edge
+over the index before costs. Details: [`eval/results/backtest_results.md`](eval/results/backtest_results.md).
 
 A worked example with the full reasoning tree and the reviewer card: [`eval/results/demo_S01.md`](eval/results/demo_S01.md).
 
@@ -165,8 +176,8 @@ notebooks/           Colab quickstart
 
 ## Limitations
 
-- Offline results test the control logic with scripted model outputs; model-quality claims need the live
-  evaluation, which costs API credits to run.
+- Offline results test the control logic with scripted model outputs. In the live evaluation the
+  multi-agent review's action varied between runs (hold vs trim) in four of five scenarios.
 - Retrieval uses TF-IDF, which misses paraphrases (e.g. "supplier concentration" vs "limited number of
   suppliers"); an embedding model is the natural upgrade behind the same interface.
 - Policy direction (favorable or unfavorable) is recorded by the thesis owner, not inferred.
