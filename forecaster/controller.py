@@ -138,7 +138,7 @@ class ThesisReviewer:
         rec = self._write_recommendation(thesis, facts, context, best, runner, action, size_change, stop,
                                          conviction_after, contested, notes, retrieved)
         report = verify_recommendation(rec, facts, retrieved, extra_numbers=known_numbers)
-        if any("has no source" in v for v in report.violations) and not self._over_budget():
+        if any("has no source" in v for v in report.violations) and not self._over_budget(need=1, reserve=0):
             trace.append("unsourced number in draft; asking the Analyst to rewrite once")
             rec = self._write_recommendation(thesis, facts, context, best, runner, action, size_change, stop,
                                              conviction_after, contested, notes + ["previous draft used an unsourced number"],
@@ -150,10 +150,15 @@ class ThesisReviewer:
         return self._finish(rec, tree, pillars_after, report, mode, started, trace)
 
     # ------------------------------------------------------------ search
-    def _over_budget(self) -> bool:
+    def _over_budget(self, need: int = 1, reserve: int = 2) -> bool:
+        """True if the next step (needing `need` model calls) would leave fewer than `reserve`
+        calls for the final write-up and its one rewrite, or retrieval is used up."""
         S = self.s.search
-        return (self.llm.n_calls - self._llm0 >= S.max_llm_calls
+        return (self.llm.n_calls - self._llm0 + need + reserve > S.max_llm_calls
                 or self.researcher.calls - self._ret0 >= S.max_retrieval_calls)
+
+    def _per_branch_calls(self) -> int:
+        return 2 if self.researcher.llm is self.llm else 1  # optional query rewrite + review
 
     def _search(self, thesis, facts, context, last_review, trace) -> Tuple[List[Branch], List[Branch]]:
         S = self.s.search
@@ -207,7 +212,7 @@ class ThesisReviewer:
                     break
             if b.status == "pruned":
                 continue
-            if self._over_budget():
+            if self._over_budget(need=self._per_branch_calls()):
                 self.incomplete = True
                 b.status = "evidence_pending"
                 continue
@@ -243,13 +248,14 @@ class ThesisReviewer:
         S = self.s.search
         ranked = sorted(frontier, key=lambda b: b.score, reverse=True)
         best = ranked[0]
-        if best.challenge and not self._over_budget():
+        if best.challenge and not self._over_budget(need=1 + self._per_branch_calls()):
             trace.append(f"reviewer challenged {best.branch_id}: {best.challenge}")
             queries = self.analyst.rebuttal(context, best, best.challenge)
             if queries:
                 probe = Branch(branch_id=best.branch_id + "-rebuttal", depth=best.depth, explanation=best.explanation,
                                implied_action=best.implied_action, queries=queries)
-                extra = self.researcher.gather(self._ticker, probe)
+                left = self.s.search.max_retrieval_calls - (self.researcher.calls - self._ret0)
+                extra = self.researcher.gather(self._ticker, probe, budget_left=left)
                 known = {e.chunk_id for e in best.evidence}
                 best.evidence += [e for e in extra if e.chunk_id not in known]
                 self.reviewer.review(context, best, round_=2)

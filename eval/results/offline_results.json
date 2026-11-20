@@ -18,7 +18,7 @@
       "notify": 3,
       "blocked": 1
     },
-    "avg_llm_calls_full_reviews": 5.3,
+    "avg_llm_calls_full_reviews": 5.4,
     "max_llm_calls": 10,
     "max_retrieval_calls": 10
   },
@@ -321,18 +321,18 @@
       "category": "control",
       "pass": true,
       "failures": [],
-      "action": "trim",
+      "action": "hold",
       "route": "human",
-      "contested": true,
-      "fallback": false,
+      "contested": false,
+      "fallback": true,
       "conviction": "high->low",
-      "llm_calls": 4,
-      "retrieval_calls": 5,
+      "llm_calls": 1,
+      "retrieval_calls": 1,
       "violations": [],
       "isolation_leaks": [],
       "order_stable": true,
       "route_reasons": [
-        "explanations still contested after review",
+        "unexplained conflict: best explanation scored 0.0 (< 4.0)",
         "conviction changed by two or more levels"
       ]
     },
