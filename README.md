@@ -94,8 +94,8 @@ A worked example with the full reasoning tree and the reviewer card: [`eval/resu
 ## Setup
 
 ```bash
-git clone https://github.com/<your-github-user>/stock-opportunity-forecaster.git
-cd stock-opportunity-forecaster
+git clone https://github.com/kotimaddala/stock-forecaster.git
+cd stock-forecaster
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python -m pytest -q                                     # 57 tests, no network needed
@@ -132,7 +132,7 @@ python -m eval.backtest_scanner --start 2024-01-01              # point-in-time 
 `offline_demo`) over the Model Context Protocol. There is deliberately no trading tool.
 
 ```
-/plugin marketplace add <your-github-user>/stock-opportunity-forecaster
+/plugin marketplace add kotimaddala/stock-forecaster
 ```
 
 ## Repository map
