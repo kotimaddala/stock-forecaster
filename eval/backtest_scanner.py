@@ -73,6 +73,8 @@ def report(trades: pd.DataFrame, account: float = 100_000) -> str:
     equity = pd.concat([pd.Series([0.0]), pnl], ignore_index=True) + account
     drawdown = ((equity / equity.cummax()) - 1).min() * 100
     lines = ["# Scanner backtest (point-in-time)", "",
+             f"Signals from {trades['entry_day'].min()} to {trades['exit_day'].max()}. "
+             "Dollar amounts are written as USD so Markdown viewers do not read $ as math.", "",
              "| Measure | Result |", "| --- | --- |",
              f"| Trades | {len(trades)} |",
              f"| Win rate | {(trades['return_pct'] > 0).mean():.0%} |",
@@ -81,7 +83,7 @@ def report(trades: pd.DataFrame, account: float = 100_000) -> str:
              f"| SPY return over the same holding periods | {trades['spy_return_pct'].mean():.2f}% |",
              f"| Exits: stop / target / time | {(trades['reason'] == 'stop').sum()} / "
              f"{(trades['reason'] == 'target').sum()} / {(trades['reason'] == 'time').sum()} |",
-             f"| Total P&L on a ${account:,.0f} paper account | ${trades['dollar_pnl'].sum():,.0f} |",
+             f"| Total P&L on a {account:,.0f} USD paper account | {trades['dollar_pnl'].sum():,.0f} USD |",
              f"| Maximum drawdown of the trade equity curve | {drawdown:.1f}% |", "",
              "Costs, slippage and taxes are not modeled; results are directional, not proof."]
     return "\n".join(lines) + "\n"
